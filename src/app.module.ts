@@ -2,6 +2,10 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { getTypeOrmConfig } from './config/database.config';
+import { UsersModule } from './users/users.module';
+import { ProductModule } from './product/product.module';
+import { ClientModule } from './client/client.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -12,6 +16,10 @@ import { getTypeOrmConfig } from './config/database.config';
       inject: [ConfigService],
       useFactory: getTypeOrmConfig,
     }),
+    UsersModule,
+    ProductModule,
+    ClientModule,
+    OrderModule,
     ],
 })
 export class AppModule {}
