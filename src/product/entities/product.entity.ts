@@ -14,7 +14,7 @@ export class Product extends baseEntity{
     price: number;
 
     @Column('int', { default: 0 })
-    stock: number;
+    stock?: number;
 
     @OneToMany(() => Order, (order) => order.product)
     orders: Order[]

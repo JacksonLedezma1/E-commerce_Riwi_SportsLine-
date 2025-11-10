@@ -20,7 +20,16 @@ export class UsersService {
         return this.userRepo.find();
     }
 
-    findUserById(id) {
-    return this.userRepo.findOneBy({ id });
-  }
+    findUserById(id: number) {
+        return this.userRepo.findOneBy({ id });
+    }
+
+    async updateUser(id: number, dto: CreateUserDto) {
+        await this.userRepo.update(id, dto);
+        return this.findUserById( id );
+    }
+
+    deleteUser(id: number) {
+        return this.userRepo.delete(id);
+    }
 }
