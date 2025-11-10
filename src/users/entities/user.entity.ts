@@ -17,5 +17,5 @@ export class User extends baseEntity{
     isActive: boolean;
 
     @OneToMany(() => Order, (order) => order.createdBy)
-    createdBy: User[]
+    ordersCreated: Order[];
 }

@@ -9,14 +9,15 @@ export class Order extends baseEntity{
     @Column('decimal', { precision: 10, scale: 2 })
     total: number;
 
-    @ManyToOne(() => Product, (product) => product.order, { onDelete: 'CASCADE' })
+    @ManyToOne(() => Product, (product) => product.orders, { onDelete: 'CASCADE' })
     @JoinColumn({name: 'product_id'})
-    product: Product[];
+    product: Product;
 
-    @ManyToOne(() => Client, (client) => client.order, { onDelete: 'CASCADE' })
+    @ManyToOne(() => Client, (client) => client.orders, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'client_id' })
-    client: Client[];
+    client: Client;
 
-    @ManyToOne(() => User, (user) => user.createdBy, { onDelete: 'CASCADE' })
-    createdBy: User[];
+    @ManyToOne(() => User, (user) => user.ordersCreated, { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'created_by' })
+    createdBy: User;
 }

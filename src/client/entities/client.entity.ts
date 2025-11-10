@@ -17,5 +17,5 @@ export class Client extends baseEntity{
     address: string
 
     @OneToMany(() => Order, (order) => order.client)
-    order: Order[]
+    orders: Order[]
 }
