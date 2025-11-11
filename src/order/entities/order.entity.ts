@@ -9,6 +9,13 @@ export class Order extends baseEntity{
     @Column('decimal', { precision: 10, scale: 2 })
     total: number;
 
+    @Column('int', { default: 1 })
+    quantity: number;
+    /* 
+    FALTA AGREGAR
+    estado del pedido (pendiente, enviado, entregado, cancelado)
+    */
+
     @ManyToOne(() => Product, (product) => product.orders, { onDelete: 'CASCADE' })
     @JoinColumn({name: 'product_id'})
     product: Product;
