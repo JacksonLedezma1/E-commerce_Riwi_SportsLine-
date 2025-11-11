@@ -1,48 +1,39 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ProductService {
-    // Business logic for product management will go
-    private products: Product[] = [];
+    constructor(
+        @InjectRepository(Product)
+        private readonly productRepo: Repository<Product>
+    ){}
 
-    createProduct(createProductDto: CreateProductDto) {
-        const newProduct: Product = {
-            id: this.products.length + 1,
-            ...createProductDto,
-            orders: [],
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        };
-        this.products.push(newProduct);
-        return newProduct;
+    async createProduct(data: CreateProductDto): Promise<Product>{
+        const newProduct = this.productRepo.create(data);
+        return this.productRepo.save(newProduct);
     }
 
-    getAllProducts() {
-        return this.products;
+    async getAllProducts(): Promise<Product[]>{
+        return this.productRepo.find({ relations: ['orders'] });
     }
 
-    getProductById(id: number){
-        const product = this.products.find((p) => p.id === id);
-        if (!product) throw new NotFoundException('Product not found');
+    async getProductById(id: number): Promise<Product> {
+        const product = await this.productRepo.findOne({ where: {id}, relations: ['orders']});
+        if (!product) throw new NotFoundException (`Producto con ID ${id} no encontrado`);
         return product;
     }
 
-    updateProduct(id: number, updateData: Partial<CreateProductDto>){
-        const product = this.getProductById(id);
-        if (product) {
-            Object.assign(product, updateData);
-        }
-        return product;
+    async updateProduct(id: number, data: Partial<CreateProductDto>): Promise<Product> {
+        const product = await this.getProductById(id);
+        this.productRepo.merge(product, data);
+        return this.productRepo.save(product);
     }
 
-    deleteProduct(id: number): boolean {
-        const index = this.products.findIndex(product => product.id === id);
-        if (index !== -1) {
-            this.products.splice(index, 1);
-            return true;
-        }
-        return false;
+    async removeProduct(id: number): Promise<void> {
+        const product = await this.getProductById(id);
+        await this.productRepo.delete(product)
     }
 }
