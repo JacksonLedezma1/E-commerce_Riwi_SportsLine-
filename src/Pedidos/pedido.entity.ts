@@ -1,5 +1,5 @@
 import {Entity, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinTable, Column} from 'typeorm';
-import { Usuario } from '../Usuarios/usuario.entitie';
+import { Usuario } from '../Usuarios/usuario.entity';
 import { Cliente } from '../Clientes/cliente.entity';
 import { Producto } from '../Productos/producto.entity';
 

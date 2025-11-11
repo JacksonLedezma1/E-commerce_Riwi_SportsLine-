@@ -1,6 +1,8 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, ParseIntPipe } from '@nestjs/common';
 import { ProductoService } from './producto.service';
 import { Producto } from "./producto.entity";
+import { CreateProductoDto } from './dto/create-productos.dto';
+import { UpdateProductoDto } from './dto/update-productos.dto';
 
 @Controller('Producto')
 export class ProductoController {
@@ -8,8 +10,8 @@ export class ProductoController {
 
     // Crear producto
     @Post()
-    async crear(@Body() datos: { nombre: string; precio: number }): Promise<Producto> {
-        return this.productoService.crearProducto(datos.nombre, datos.precio);
+    crearProducto(@Body() dto: CreateProductoDto) {
+        return this.productoService.crearProducto(dto);
     }
 
     // Listar todos los producto
@@ -26,11 +28,11 @@ export class ProductoController {
 
     // Actualizar producto
     @Put(':id')
-    async actualizar(
-        @Param('id') id: number,
-        @Body() datos: Partial<Producto>,
-    ): Promise<Producto | null> {
-        return this.productoService.actualizarProducto(id, datos);
+    actualizarProducto(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() dto: UpdateProductoDto,
+    ) {
+        return this.productoService.actualizarProducto(id, dto);
     }
 
     // Eliminar producto
