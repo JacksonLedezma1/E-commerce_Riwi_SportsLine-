@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Cliente } from './cliente.entity';
+import { CreateClienteDto } from './dto/create-cliente.dto';
+import { UpdateClienteDto } from './dto/update-cliente.dto';
 
 @Injectable()
 export class ClienteService {
@@ -10,8 +12,8 @@ export class ClienteService {
         private readonly clienteRepository: Repository<Cliente>,
     ) {}
 
-    async crearCliente(nombre: string, direccion: string): Promise<Cliente> {
-        const nuevo = this.clienteRepository.create({ nombre, direccion });
+    async crearCliente(dto: CreateClienteDto): Promise<Cliente> {
+        const nuevo = this.clienteRepository.create(dto);
         return await this.clienteRepository.save(nuevo);
     }
 
@@ -26,8 +28,8 @@ export class ClienteService {
         });
     }
 
-    async actualizarCliente(id: number, datos: Partial<Cliente>): Promise<Cliente | null> {
-        await this.clienteRepository.update(id, datos);
+    async actualizarCliente(id: number, dto: UpdateClienteDto): Promise<Cliente | null> {
+        await this.clienteRepository.update(id, dto);
         return await this.obtenerClientePorId(id);
     }
 

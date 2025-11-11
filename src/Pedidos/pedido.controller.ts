@@ -1,20 +1,17 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe  } from '@nestjs/common';
 import { PedidosService } from './pedido.service';
 import { Pedido } from './pedido.entity';
+import { CreatePedidoDto } from './dto/create-pedidos.dto';
+import { UpdatePedidoDto } from './dto/update-pedidos.dto';
 
 @Controller('pedidos')
 export class PedidosController {
     constructor(private readonly pedidosService: PedidosService) {}
 
     @Post()
-    async crearPedido(
-        @Body('usuarioId') usuarioId: number,
-        @Body('clienteId') clienteId: number,
-        @Body('productosIds') productosIds: number[],
-    ) {
-        return this.pedidosService.crearPedido(usuarioId, clienteId, productosIds);
+    async crearPedido(@Body() dto: CreatePedidoDto) {
+        return this.pedidosService.crearPedido(dto);
     }
-
     @Get()
     async obtenerPedidos() {
         return this.pedidosService.obtenerPedidos();
@@ -27,11 +24,11 @@ export class PedidosController {
 
     // Actualizar estado del pedido
     @Put(':id')
-    async actualizarEstado(
-        @Param('id') id: number,
-        @Body('estado') estado: string,
-    ): Promise<Pedido> {
-        return this.pedidosService.actualizarEstado(Number(id), estado);
+    async actualizarPedido(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() dto: UpdatePedidoDto,
+    ) {
+        return this.pedidosService.actualizarPedido(id, dto);
     }
 
     // Eliminar pedido

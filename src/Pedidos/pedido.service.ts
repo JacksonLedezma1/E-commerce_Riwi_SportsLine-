@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In } from 'typeorm';
-import { NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { Pedido } from './pedido.entity';
 import { Cliente } from '../Clientes/cliente.entity';
-import { Usuario } from '../Usuarios/usuario.entitie';
+import { Usuario } from '../Usuarios/usuario.entity';
 import { Producto } from '../Productos/producto.entity';
+import { CreatePedidoDto } from './dto/create-pedidos.dto';
+import { UpdatePedidoDto } from './dto/update-pedidos.dto';
 
 @Injectable()
 export class PedidosService {
@@ -22,25 +22,20 @@ export class PedidosService {
     ) {}
 
     // Crear un nuevo pedido
-    async crearPedido(
-        clienteId: number,
-        usuarioId: number,
-        productosIds: number[],
-    ): Promise<Pedido> {
+    async crearPedido(dto: CreatePedidoDto): Promise<Pedido> {
+        const { clienteId, usuarioId, productosIds, estado } = dto;
+
         const cliente = await this.clienteRepository.findOneBy({ id: clienteId });
-        const usuario = await this.usuarioRepository.findOneBy({ id: usuarioId });
-        const productos = await this.productoRepository.findBy({ id: In(productosIds) });
-
         if (!cliente) throw new NotFoundException('Cliente no encontrado');
-        if (!usuario) throw new NotFoundException('Usuario no encontrado');
-        if (productos.length === 0) throw new NotFoundException('Productos no encontrados');
 
-        const nuevoPedido = this.pedidoRepository.create({
-            cliente,
-            usuario,
-            productos,
-            estado: 'pendiente',
-        });
+        const usuario = await this.usuarioRepository.findOneBy({ id: usuarioId });
+        if (!usuario) throw new NotFoundException('Usuario no encontrado');
+
+        const productos = await this.productoRepository.findBy({ id: In(productosIds) });
+        if (!productos || productos.length === 0)
+            throw new NotFoundException('Productos no encontrados');
+
+        const nuevoPedido = this.pedidoRepository.create(dto);
 
         return this.pedidoRepository.save(nuevoPedido);
     }
@@ -58,19 +53,32 @@ export class PedidosService {
             where: { id },
             relations: ['cliente', 'usuario', 'productos'],
         });
-        if (!pedido) throw new Error(`No se encontró el pedido con ID ${id}`);
+        if (!pedido) throw new NotFoundException(`Pedido con ID ${id} no encontrado`);
         return pedido;
     }
 
-    // Actualizar estado del pedido
-    async actualizarEstado(id: number, estado: string): Promise<Pedido> {
+    // Actualizar estado o datos del pedido
+    async actualizarPedido(id: number, dto: UpdatePedidoDto): Promise<Pedido> {
         const pedido = await this.obtenerPedidoPorId(id);
-        pedido.estado = estado;
+
+        if (dto.estado) pedido.estado = dto.estado;
+        if (dto.productosIds && dto.productosIds.length > 0) {
+            const productos = await this.productoRepository.findBy({
+                id: In(dto.productosIds),
+            });
+            if (productos.length === 0)
+                throw new BadRequestException('Los productos enviados no existen');
+            pedido.productos = productos;
+        }
+
         return this.pedidoRepository.save(pedido);
     }
 
     // Eliminar pedido
     async eliminarPedido(id: number): Promise<void> {
-        await this.pedidoRepository.delete(id);
+        const pedido = await this.pedidoRepository.findOneBy({ id });
+        if (!pedido) throw new NotFoundException('El pedido no existe');
+        await this.pedidoRepository.remove(pedido);
     }
 }
+
