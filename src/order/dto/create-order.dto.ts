@@ -1,11 +1,25 @@
-import { IsNumber, IsPositive } from "class-validator";
+import { IsNumber, IsEnum, Min, isNumber, IsOptional } from "class-validator";
+import { OrderStatus } from "../entities/order.entity";
 
 export class CreateOrderDto {
     @IsNumber()
-    @IsPositive({ message: 'Price must be a positive number' })
-    total: number;
+    productId: number;
 
     @IsNumber()
-    @IsPositive({ message: 'Quantity must be a positive number' })
+    clientId: number;
+
+    @IsNumber()
+    createdById: number;
+
+    @IsNumber()
+    @Min(1)
     quantity: number;
+
+    @IsNumber()
+    @Min(0)
+    total: number;
+
+    @IsOptional()
+    @IsEnum(OrderStatus)
+    status?: OrderStatus;
 }
