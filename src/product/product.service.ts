@@ -3,6 +3,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { Repository } from 'typeorm';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Injectable()
 export class ProductService {
@@ -26,7 +27,7 @@ export class ProductService {
         return product;
     }
 
-    async updateProduct(id: number, data: Partial<CreateProductDto>): Promise<Product> {
+    async updateProduct(id: number, data: Partial<UpdateProductDto>): Promise<Product> {
         const product = await this.getProductById(id);
         this.productRepo.merge(product, data);
         return this.productRepo.save(product);
