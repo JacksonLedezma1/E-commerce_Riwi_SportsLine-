@@ -4,10 +4,27 @@ import { Client } from "src/client/entities/client.entity";
 import { baseEntity } from "src/shared/base.entity";
 import { User } from "src/users/entities/user.entity";
 
+export enum OrderStatus {
+  PENDING = 'pending',
+  SHIPPED = 'shipped',
+  DELIVERED = 'delivered',
+  CANCELLED = 'cancelled',
+}
+
 @Entity('orders')
 export class Order extends baseEntity{
     @Column('decimal', { precision: 10, scale: 2 })
     total: number;
+
+    @Column('int', { default: 1 })
+    quantity: number;
+    
+    @Column({
+    type: 'enum',
+    enum: OrderStatus,
+    default: OrderStatus.PENDING,
+    })
+    status: OrderStatus;
 
     @ManyToOne(() => Product, (product) => product.orders, { onDelete: 'CASCADE' })
     @JoinColumn({name: 'product_id'})
