@@ -220,9 +220,42 @@
    - Verificar/ajustar `entities` y relaciones en TypeORM.
    - Documentar endpoints adicionales si cambian con nuevas historias de usuario.
    - Configurar ESLint/Prettier según convenciones del equipo.
+
+### Semana 4: Middleware, Filtros e Interceptores ✅ COMPLETADO
+
+**Implementado:**
+- ✅ Middleware de auditoría y logging
+- ✅ Exception Filter global para manejo de errores
+- ✅ Guards personalizados para validación de roles
+- ✅ Interceptors para formateo de respuestas y medición de tiempo
+- ✅ Pruebas unitarias (19 tests pasando)
+- ✅ Documentación completa
+
+**Archivos nuevos:**
+- `src/common/middleware/loggin.middleware.ts` - Logging de peticiones
+- `src/common/guards/roles.guard.ts` - Validación de roles (mejorado)
+- `src/common/interceptors/response.interceptor.ts` - Formateo de respuestas
+- `src/common/interceptors/logging.interceptor.ts` - Medición de tiempo
+- `src/common/README.md` - Documentación de componentes
+- `IMPLEMENTATION_GUIDE.md` - Guía de implementación
+- `USAGE_EXAMPLES.md` - Ejemplos de uso
+- `ARCHITECTURE.md` - Diagrama de arquitectura
+- `QUICK_START.md` - Inicio rápido
+
+**Documentación:**
+- Consulta `QUICK_START.md` para empezar rápidamente
+- Consulta `USAGE_EXAMPLES.md` para ejemplos de controladores
+- Consulta `ARCHITECTURE.md` para entender el flujo completo
+- Consulta `src/common/README.md` para documentación detallada
+
+### Próximos pasos:
+- Implementar autenticación JWT
+- Agregar validación de permisos más granulares
+- Implementar rate limiting
+- Agregar logging a archivos
+- Integrar con servicios de monitoreo
  
  ## 🤝 Contribución
  1. Crear rama feature: `git checkout -b feat/<nombre>`
  2. Commit: `git commit -m "feat: <cambio>"`
  3. Push: `git push origin feat/<nombre>`
- 4. Abrir Pull Request
