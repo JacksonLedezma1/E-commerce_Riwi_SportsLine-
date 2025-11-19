@@ -15,6 +15,9 @@ export class Usuario {
     @Column()
     contrasena: string;
 
+    @Column()
+    rol: string;
+
     @OneToMany(() => Pedido, (pedido) => pedido.usuario)
     pedidos: Pedido[];
 }

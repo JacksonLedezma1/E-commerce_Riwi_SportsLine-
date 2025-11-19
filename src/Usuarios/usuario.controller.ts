@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, UseGuards } from '@nestjs/common';
 import { UsuariosService } from './usuario.service';
 import { Usuario } from './usuario.entity';
 import { CreateUsuarioDto } from "./dto/create-usuarios.dto";
 import { UpdateUsuarioDto } from "./dto/update-usuarios.dto";
+import { RolesGuard } from "../common/guards/roles.guard";
+import { Roles } from "../common/decorators/roles.decorator";
 
 @Controller('usuarios')
 export class UsuariosController {
@@ -15,6 +17,8 @@ export class UsuariosController {
     }
 
     // Listar todos los usuarios
+    @Roles('admin')
+    @UseGuards(RolesGuard)
     @Get()
     async obtenerTodos(): Promise<Usuario[]> {
         return this.usuariosService.obtenerUsuarios();
