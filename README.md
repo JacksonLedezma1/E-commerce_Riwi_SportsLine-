@@ -115,3 +115,7 @@ Relaciones configuradas con decoradores (OneToMany, ManyToOne).
 Configuración de Supabase mediante DB_URL.
 Migraciones y seeds funcionales.
 Repositorios listos para operaciones CRUD.
+
+
+npm i @nestjs/jwt passport passport-jwt bcrypt
+npm i -D @types/passport-jwt @types/passport
