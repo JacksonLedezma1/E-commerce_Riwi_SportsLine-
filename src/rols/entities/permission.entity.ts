@@ -1,8 +1,9 @@
 import { Role } from "src/rols/entities/rol.entity";
-import { BaseEntity, Column, Entity, ManyToMany } from "typeorm";
+import { baseEntity } from "src/shared/base.entity";
+import { Column, Entity, ManyToMany } from "typeorm";
 
 @Entity('permissions')
-export class Permission extends BaseEntity {
+export class Permission extends baseEntity {
     @Column({ unique: true })
     name: string;
 

@@ -1,9 +1,10 @@
-import { Permission } from "src/permissions/entities/permission.entity";
+import { Permission } from "src/rols/entities/permission.entity";
+import { baseEntity } from "src/shared/base.entity";
 import { User } from "src/users/entities/user.entity";
-import { BaseEntity, Column, Entity, JoinTable, ManyToOne, OneToMany } from "typeorm";
+import { Column, Entity, JoinTable, ManyToOne, OneToMany } from "typeorm";
 
 @Entity('roles')
-export class Role extends BaseEntity {
+export class Role extends baseEntity {
     @Column({ unique: true })
     name: string;
 
