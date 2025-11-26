@@ -1,7 +1,7 @@
 import { Permission } from "src/rols/entities/permission.entity";
 import { baseEntity } from "src/shared/base.entity";
 import { User } from "src/users/entities/user.entity";
-import { Column, Entity, JoinTable, ManyToOne, OneToMany } from "typeorm";
+import { Column, Entity, JoinTable, OneToMany } from "typeorm";
 
 @Entity('roles')
 export class Role extends baseEntity {
@@ -11,11 +11,6 @@ export class Role extends baseEntity {
     @OneToMany(() => User, (user) => user.role)
     users: User[];
 
-    @ManyToOne(() => Permission, (perm) => perm.roles)
-    @JoinTable ({
-        name: 'role_permissions',
-        joinColumn: { name: 'role_id' },
-        inverseJoinColumn: { name: 'permission_id'},
-    })
+    @OneToMany(() => Permission, (perm) => perm.roles)
     permissions: Permission[]
 }
