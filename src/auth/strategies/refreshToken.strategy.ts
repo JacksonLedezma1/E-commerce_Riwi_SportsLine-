@@ -6,6 +6,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { StrategyOptionsWithRequest } from 'passport-jwt';
 
 @Injectable()
+//Estrategia para refrescar el
 export class refreshTokenStrategy extends PassportStrategy(
     Strategy,
     'jwt-refresh',

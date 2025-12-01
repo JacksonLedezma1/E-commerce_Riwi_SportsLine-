@@ -24,6 +24,11 @@ export class UsersController {
     return this.userService.findUserById(id);
     }
 
+    @Get(':email')
+    findByEmail(@Param('email') email: string){
+        return this.userService.findByEmail(email);
+    }
+
     @Roles('admin')
     @Put(':id')
     updateUser(@Param('id') id: number, @Body() dto: UpdateUserDto) {

@@ -21,6 +21,7 @@ export class User extends baseEntity{
     ordersCreated: Order[];
 
     @ManyToOne(() => Role, (role) => role.users, { eager: true })
+    //El eager:true carga el rol automaticamente cuando obtienes el usuario
     @JoinColumn({ name: 'role_id' })
     role: Role;
 

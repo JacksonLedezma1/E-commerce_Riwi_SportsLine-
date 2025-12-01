@@ -6,9 +6,12 @@ import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { PassportModule } from '@nestjs/passport';
+import { UsersModule } from 'src/users/users.module';
+import { RolsModule } from 'src/rols/rols.module';
 
 @Module({
-  imports: [ JwtModule.registerAsync({
+  imports: [ PassportModule, UsersModule, RolsModule, JwtModule.registerAsync({
     useFactory: (config: ConfigService) => ({
       secret: config.get('JWT_SECRET'),
       signOptions: { expiresIn: '15m' },

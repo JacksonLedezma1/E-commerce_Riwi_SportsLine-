@@ -12,4 +12,5 @@ export class Permission extends baseEntity {
 
     @OneToMany(() => Role, (role) => role.permissions)
     roles: Role[]
+    //Un permiso puede pertenecer a varios roles
 }

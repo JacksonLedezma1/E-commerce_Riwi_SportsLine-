@@ -4,6 +4,7 @@ import { ExtractJwt, Strategy } from "passport-jwt";
 import { PassportStrategy } from "@nestjs/passport";
 
 @Injectable()
+//esta estrategia valida el access token
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt'){
     constructor(config: ConfigService){
 
@@ -19,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt'){
         });
     }
 
-    validate(payload: any){
-        return payload; //Payload returns {sub, email, role}
+    async validate(payload: any){
+        return payload; //Payload returns {sub: userId, email, role} que se inyecta en el req.user
     }
 }
