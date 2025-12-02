@@ -7,25 +7,41 @@ import { PERMISSIONS_KEY } from "../decorators/permissions.decorator";
 export class PermissionGuard implements CanActivate{
     constructor(private reflector: Reflector) {}
 
-    canActivate(ctx: ExecutionContext): boolean{
+    async canActivate(context: ExecutionContext): Promise<boolean>{
+        //1. Buscar los permisos requeridos en el endpoint
         const requiredPermissions = this.reflector.getAllAndOverride<string[]>(
             PERMISSIONS_KEY,
-            [ctx.getHandler(), ctx.getClass()]
+            [context.getHandler(), context.getClass()]
         );
 
         if (!requiredPermissions) return true;
 
-        const { user } = ctx.switchToHttp().getRequest();
+        //2. Obtener el usuario desde JWT
+        const request = context.switchToHttp().getRequest();    
+        const user = request.user;
 
-        const userPermissions = user.role?.rolePermissions?.map(
-            p => p.action
-        ) ?? [];
+        if (!user?.role?.permissions) {
+            throw new ForbiddenException('Usuario no tiene permisos asignados');
+        }
 
-        const hasAll = requiredPermissions.every(p => userPermissions.includes(p))
-        if (!hasAll){
-            throw new ForbiddenException ('No tienes permisos suficientes')
+        //3. Lista de permisos del usuario
+        const userPermissions = user.role.permissions.map((p) => p.name);
+
+        //4. Verificar si el usuario tiene los permisos requeridos
+        const hasPermission = requiredPermissions.every((permission) =>
+            userPermissions.includes(permission),
+        );
+        
+        if (!hasPermission) {
+            throw new ForbiddenException('Usuario no tiene permisos para acceder a este recurso');
         }
 
         return true;
     }
 }
+
+/**
+ * Lee los permisos desde el @Permissions()
+ * Verifica si el usuario tiene los permisos requeridos
+ * Lanza ForbiddenException si no tiene permisos
+ */

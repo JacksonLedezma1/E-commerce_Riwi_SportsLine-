@@ -26,5 +26,5 @@ export class User extends baseEntity{
     role: Role;
 
     @Column({ nullable: true })
-    refreshTokenHash: string;
+    refreshToken?: string;
 }
