@@ -34,6 +34,14 @@ export class UsersService {
         return this.findUserById( id );
     }
 
+    async getUserRoleWithPermissions(id: number) {
+    const user = await this.userRepo.findOne({
+        where: { id },
+        relations: ['role', 'role.permissions'],
+    });
+    return user?.role;
+    }
+
     deleteUser(id: number) {
         return this.userRepo.delete(id);
     }

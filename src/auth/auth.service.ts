@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from 'src/users/users.service';
 import { LoginDto } from './dto/login.dto';
+import { Permissions } from './decorators/permissions.decorator';
 
 @Injectable()
 export class AuthService {
@@ -53,7 +54,7 @@ export class AuthService {
             sub: user.id,
             email: user.email,
             role: user.role?.name,
-            permissions: user.role?.permissions?.map(p => p.name),
+            Permissions,
         };
 
         const access_token = this.jwt.sign(payload, {
