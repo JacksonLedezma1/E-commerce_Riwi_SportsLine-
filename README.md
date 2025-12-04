@@ -1,229 +1,261 @@
-#  E-commerce API 
-**Migración a TypeORM + Supabase (NestJS + PostgreSQL)**
+ # RIWI SportsLine – Backend (NestJS + TypeORM + PostgreSQL)
+ 
+ Proyecto backend para el e-commerce RIWI SportsLine. Basado en NestJS con TypeORM y PostgreSQL, usando variables de entorno para configuración.
+ 
+ ## 🚀 Tech Stack
+ - NestJS
+ - TypeORM
+ - PostgreSQL
+ - @nestjs/config (variables de entorno)
+ 
+ ## 📁 Estructura (actual)
+ ```
+ src/
+ ├─ Clientes/
+ ├─ Pedidos/
+ ├─ Productos/
+ ├─ Seeds/
+ ├─ Usuarios/
+ ├─ config/
+ │  └─ DataBase.ts       # AppModule con ConfigModule y TypeOrmModule
+ └─ main.ts              # Bootstrap de Nest (CORS activo, puerto desde .env)
+ .env                    # Variables de entorno (no versionado)
+ package.json
+ ```
+ 
+ ## ⚙️ Requisitos previos
+ - Node.js 18+
+ - npm 9+
+ - PostgreSQL 13+
+ - (Opcional) Nest CLI: `npm i -g @nestjs/cli`
+ 
+ ## 🔐 Variables de entorno
+ Crea un archivo `.env` en la raíz con, por ejemplo:
+ ```
+ PORT=5000
+ DATABASE_HOST=localhost
+ DATABASE_PORT=5432
+ DATABASE_USER=postgres
+ DATABASE_PASS=postgres
+ DATABASE_NAME=riwi_sportsline
+ ```
+ Si no defines `PORT`, la app usa 5000 por defecto.
+ 
+ ## 📦 Instalación
+ ```bash
+ npm install
+ ```
+ 
+ ## ▶️ Ejecución
+ Scripts disponibles (ver `package.json`):
+ - `start`: inicia la app
+ - `start:dev`: inicia en modo watch
+ - `start:debug`: modo debug + watch
+ - `start:prod`: ejecuta `node dist/main`
+ - `build`: compila a `dist`
+ - `lint`, `format`, `test`, `test:e2e`
+ - `seed`: ejecuta `src/seeds/seed.ts`
+ 
+ Comandos útiles:
+ ```bash
+ npm run start:dev
+ # o
+ npm run start
+ ```
+ 
+ Base URL por defecto: `http://localhost:5000` (o el puerto definido en `PORT`).
+ 
+ ## 🗄️ Base de datos
+ - El módulo `TypeOrmModule.forRoot` usa variables `.env` para conectarse a Postgres.
+ - `synchronize: true` está activado para desarrollo (no recomendado en producción).
+ 
+ ## Peticiones en Postman
+ 
+ ---
+ 
+ ## 🚀 1. USUARIOS
+ 
+ **Endpoint base:** `/usuarios`
+ 
+ ### ➕ Crear usuario
+ 
+ **POST** `/usuarios`
+ 
+ ```json
+ {
+   "nombre": "Carlos Ruiz",
+   "correo": "carlos@correo.com",
+   "password": "123456"
+ }
+ ```
+ 
+ ### 🔍 Listar todos los usuarios
+ 
+ **GET** `/usuarios`
+ 
+ ### 🔍 Obtener un usuario por ID
+ 
+ **GET** `/usuarios/1`
+ 
+ ### ✏️ Actualizar usuario
+ 
+ **PATCH** `/usuarios/1`
+ 
+ ```json
+ {
+   "nombre": "Carlos Ruiz Actualizado"
+ }
+ ```
+ 
+ ### ❌ Eliminar usuario
+ 
+ **DELETE** `/usuarios/1`
+ 
+ ---
+ 
+ ## 👥 2. CLIENTES
+ 
+ **Endpoint base:** `/clientes`
+ 
+ ### ➕ Crear cliente
+ 
+ **POST** `/clientes`
+ 
+ ```json
+ {
+   "nombre": "María López",
+   "direccion": "Calle 45 #23-10"
+ }
+ ```
+ 
+ ### 🔍 Listar clientes
+ 
+ **GET** `/clientes`
+ 
+ ---
+ 
+ ## 🛒 3. PRODUCTOS
+ 
+ **Endpoint base:** `/productos`
+ 
+ ### ➕ Crear producto
+ 
+ **POST** `/productos`
+ 
+ ```json
+ {
+   "nombre": "Balón de fútbol",
+   "precio": 150000
+ }
+ ```
+ 
+ ### 🔍 Listar productos
+ 
+ **GET** `/productos`
+ 
+ ### ✏️ Actualizar producto
+ 
+ **PATCH** `/productos/1`
+ 
+ ```json
+ {
+   "precio": 120000
+ }
+ ```
+ 
+ ---
+ 
+ ## 📦 4. PEDIDOS
+ 
+ **Endpoint base:** `/pedidos`
+ 
+ > 💡 Para crear un pedido primero asegúrate de tener creados al menos:
+ >
+ > * 1 **usuario**
+ > * 1 **cliente**
+ > * 1 o más **productos**
+ 
+ ### ➕ Crear pedido
+ 
+ **POST** `/pedidos`
+ 
+ ```json
+ {
+   "usuarioId": 1,
+   "clienteId": 1,
+   "productosIds": [1, 2],
+   "estado": "pendiente"
+ }
+ ```
+ 
+ ### 🔍 Listar pedidos
+ 
+ **GET** `/pedidos`
+ 
+ ### 🔍 Obtener pedido por ID
+ 
+ **GET** `/pedidos/1`
+ 
+ ### ✏️ Actualizar estado del pedido
+ 
+ **PATCH** `/pedidos/1`
+ 
+ ```json
+ {
+   "estado": "enviado"
+ }
+ ```
+ 
+ ### ❌ Eliminar pedido
+ 
+ **DELETE** `/pedidos/1`
+ 
+ ---
+ 
+ ## ✅ Estado actual y próximos pasos
+ - `main.ts` presente con CORS habilitado y puerto desde `.env` (default 5000).
+ - Scripts de ejecución, build, test y seed configurados en `package.json`.
+ - Módulo de base de datos en `config/DataBase.ts` usando variables `.env`.
+ - Pendiente:
+   - Verificar/ajustar `entities` y relaciones en TypeORM.
+   - Documentar endpoints adicionales si cambian con nuevas historias de usuario.
+   - Configurar ESLint/Prettier según convenciones del equipo.
 
----
+### Semana 4: Middleware, Filtros e Interceptores ✅ COMPLETADO
 
-###  Migración de Sequelize a TypeORM
+**Implementado:**
+- ✅ Middleware de auditoría y logging
+- ✅ Exception Filter global para manejo de errores
+- ✅ Guards personalizados para validación de roles
+- ✅ Interceptors para formateo de respuestas y medición de tiempo
+- ✅ Pruebas unitarias (19 tests pasando)
+- ✅ Documentación completa
 
-Se reemplazó **Sequelize** por **TypeORM** para aprovechar:
-- Decoradores y tipado nativo de **TypeScript**.
-- Integración directa con el ecosistema **NestJS**.
-- Soporte nativo de **migraciones**, **relaciones** y **repositorios personalizados**.
-- Compatibilidad sencilla con **Supabase (PostgreSQL)**.
+**Archivos nuevos:**
+- `src/common/middleware/loggin.middleware.ts` - Logging de peticiones
+- `src/common/guards/roles.guard.ts` - Validación de roles (mejorado)
+- `src/common/interceptors/response.interceptor.ts` - Formateo de respuestas
+- `src/common/interceptors/logging.interceptor.ts` - Medición de tiempo
+- `src/common/README.md` - Documentación de componentes
+- `IMPLEMENTATION_GUIDE.md` - Guía de implementación
+- `USAGE_EXAMPLES.md` - Ejemplos de uso
+- `ARCHITECTURE.md` - Diagrama de arquitectura
+- `QUICK_START.md` - Inicio rápido
 
----
+**Documentación:**
+- Consulta `QUICK_START.md` para empezar rápidamente
+- Consulta `USAGE_EXAMPLES.md` para ejemplos de controladores
+- Consulta `ARCHITECTURE.md` para entender el flujo completo
+- Consulta `src/common/README.md` para documentación detallada
 
-###  Entidad base: `User`
-
-```ts
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Order } from '../orders/order.entity';
-
-@Entity('users')
-export class User {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @Column({ length: 100 })
-  name: string;
-
-  @Column({ unique: true })
-  email: string;
-
-  @Column()
-  password: string;
-
-  @Column({ default: true })
-  isActive: boolean;
-
-  @OneToMany(() => Order, (order) => order.user)
-  orders: Order[];
-}
-```
-
-Configuración de TypeORM (src/config/database.config.ts)
-
-La configuraccion de typeORM conecta automáticamente con la base de datos de Supabase y carga todas las entidades registradas en los módulos.
-
-### Relaciones y entidades adicionales
-
-| Entidad              | Relación | Descripción                               |
-| -------------------- | -------- | ----------------------------------------- |
-| `User` → `Order`     | 1:N      | Un usuario puede tener varios pedidos     |
-| `Product` → `Order`  | 1:N      | Un producto puede estar en muchos pedidos |
-| `Customer` → `Order` | 1:N      | Un cliente puede tener varios pedidos     |
-
-Las entidades Product, Customer y Order siguen el mismo patrón modular, declaradas con @Entity() y relaciones @ManyToOne() o @OneToMany() según corresponda.
-
-
-### Migraciones y Seeds
-
-#### Crear migración
-npm run typeorm migration:generate -- -n InitSchema
-
-#### Ejecutar migraciones
-npm run typeorm migration:run
-npm run typeorm migration:revert
-
-#### Crear un seed inicial
-```ts
-import { DataSource } from 'typeorm';
-import { User } from '../users/user.entity';
-import * as bcrypt from 'bcrypt';
-
-export const seed = async (dataSource: DataSource) => {
-  const repo = dataSource.getRepository(User);
-  const password = await bcrypt.hash('admin123', 10);
-
-  const admin = repo.create({
-    name: 'Admin',
-    email: 'admin@example.com',
-    password,
-  });
-
-  await repo.save(admin);
-  console.log(' Usuario admin creado');
-}; 
-```
-
-### Comandos del proyecto
-
-# development
-npm run start
-
-# watch mode
-npm run start:dev
-
-# production
-npm run start:prod
-
-### Ejecutar pruebas 
-# unit tests
-npm run test
-
-# e2e tests
-npm run test:e2e
-
-# coverage
-npm run test:cov
-
-### Criterios de aceptación 
-
-Migración completa de Sequelize a TypeORM.
-Entidades base: User, Product, Customer, Order.
-Relaciones configuradas con decoradores (OneToMany, ManyToOne).
-Configuración de Supabase mediante DB_URL.
-Migraciones y seeds funcionales.
-Repositorios listos para operaciones CRUD.
-
-# Estructura del módulo Auth
-
-src/
-│── auth/
-│   ├── auth.module.ts
-│   ├── auth.controller.ts
-│   ├── auth.service.ts
-│   ├── strategies/
-│   │    ├── jwt.strategy.ts
-│   │    ├── refresh.strategy.ts
-│   ├── guards/
-│   │    ├── jwt.guard.ts
-│   │    ├── refresh.guard.ts
-│   │    ├── roles.guard.ts
-│   │    ├── permissions.guard.ts
-│   ├── decorators/
-│   │    ├── get-user.decorator.ts
-│   │    ├── roles.decorator.ts
-│   │    ├── permissions.decorator.ts
-│   ├── dto/
-│   │    ├── login.dto.ts
-│   │    ├── refresh-token.dto.ts
-
-
-## Estructura del modulo Roles y Permisos
-
-src/
-│── roles/
-│   ├── roles.module.ts
-│   ├── roles.service.ts
-│   ├── roles.controller.ts
-│   ├── entities/
-│        ├── role.entity.ts
-│        ├── permission.entity.ts
-
-## Flujo de Autenticación
-
-### Login
-Se valida el usuario + contraseña.
-Se genera un Access Token (15min).
-Se genera un Refresh Token (7 días).
-Se almacena el refresh token encriptado en la BD.
-
-### Refresh Token
-El cliente envía su refresh token.
-Se compara con el token en BD (bcrypt).
-Se generan nuevos tokens.
-Se actualiza el refresh token almacenado.
-
-### Logout
-Se borra el refresh token de BD.
-
-### Register
-Se encripta password.
-Se asigna un rol inicial.
-Se guarda el usuario.
-
-## Roles y Permisos desde la Base de Datos
-### Entidad Role
-Relación 1:N con usuarios.
-Relación N:N con permisos.
-
-### Entidad Permission
-Descripción del permiso.
-Lista de roles asociados.
-Esto permite:
-Administrar roles en la BD.
-Dar permisos granulares.
-Combinarlos con guards personalizados.
-
-## Guards y Decoradores personalizados
-@Roles('admin')
-Protege rutas basadas en el nombre del rol.
-
-@Permissions('create_product')
-Protege por permisos específicos.
-
-Guards aplicados:
-JwtAuthGuard
-RefreshAuthGuard
-RolesGuard
-PermissionsGuard
-
-## Documentación Swagger
-Se activo autenticacion en JWT 
-```ts
-.addBearerAuth(
-  { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
-  'access-token'
-)
-
-//Cada empoint protegido usa
-
-@ApiBearerAuth('access-token')
-
-```
-
-## Comandos instalados para la semana
-npm i @nestjs/jwt passport passport-jwt bcrypt
-npm i -D @types/passport-jwt @types/passport
-
-## Criterios de aceptación - Semana 5
-✔️ Autenticación y autorización implementadas con Passport + JWT
-✔️ Access Token + Refresh Token funcional
-✔️ Refresh token almacenado en BD de forma segura
-✔️ Roles y permisos extraídos desde las entidades Role & Permission
-✔️ Guards personalizados para roles y permisos
-✔️ Decoradores @Roles() y @Permissions()
-✔️ Protección de rutas crítica
-✔️ Documentación Swagger con BearerAuth
-✔️ AuthController y AuthService completos
+### Próximos pasos:
+- Implementar autenticación JWT
+- Agregar validación de permisos más granulares
+- Implementar rate limiting
+- Agregar logging a archivos
+- Integrar con servicios de monitoreo
+ 
+ ## 🤝 Contribución
+ 1. Crear rama feature: `git checkout -b feat/<nombre>`
+ 2. Commit: `git commit -m "feat: <cambio>"`
+ 3. Push: `git push origin feat/<nombre>`
