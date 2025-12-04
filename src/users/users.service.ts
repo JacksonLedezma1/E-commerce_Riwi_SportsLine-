@@ -1,0 +1,48 @@
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './entities/user.entity';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+
+@Injectable()
+export class UsersService {
+    constructor(
+        @InjectRepository(User)
+        private readonly userRepo: Repository<User>
+    ){}
+
+    createUser(dto: CreateUserDto){
+        const user = this.userRepo.create(dto);
+        return this.userRepo.save(user);
+    }
+
+    findAllUsers(){
+        return this.userRepo.find();
+    }
+
+    findUserById(id: number) {
+        return this.userRepo.findOneBy({ id });
+    }
+
+    findByEmail(email: string){
+        return this.userRepo.findOneBy({ email });
+    }
+
+    async updateUser(id: number, dto: UpdateUserDto) {
+        await this.userRepo.update(id, dto);
+        return this.findUserById( id );
+    }
+
+    async getUserRoleWithPermissions(id: number) {
+    const user = await this.userRepo.findOne({
+        where: { id },
+        relations: ['role', 'role.permissions'],
+    });
+    return user?.role;
+    }
+
+    deleteUser(id: number) {
+        return this.userRepo.delete(id);
+    }
+}
