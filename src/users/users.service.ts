@@ -25,9 +25,21 @@ export class UsersService {
         return this.userRepo.findOneBy({ id });
     }
 
+    findByEmail(email: string){
+        return this.userRepo.findOneBy({ email });
+    }
+
     async updateUser(id: number, dto: UpdateUserDto) {
         await this.userRepo.update(id, dto);
         return this.findUserById( id );
+    }
+
+    async getUserRoleWithPermissions(id: number) {
+    const user = await this.userRepo.findOne({
+        where: { id },
+        relations: ['role', 'role.permissions'],
+    });
+    return user?.role;
     }
 
     deleteUser(id: number) {

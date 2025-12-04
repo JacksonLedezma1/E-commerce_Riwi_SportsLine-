@@ -71,9 +71,9 @@ describe('OrdersService', () => {
   describe('create()', () => {
     it('debería crear una orden correctamente', async () => {
       const dto = {
-        productId: 'p1',
-        clientId: 'c1',
-        createdById: 'u1',
+        productId: 1,
+        clientId: 1,
+        createdById: 1,
         quantity: 2,
         total: 200,
       };
@@ -95,9 +95,9 @@ describe('OrdersService', () => {
 
       await expect(
         service.createOrder({
-          productId: 'x',
-          clientId: 'c1',
-          createdById: 'u1',
+          productId: 1,
+          clientId: 1,
+          createdById: 1,
           quantity: 1,
           total: 100,
         } as any),
