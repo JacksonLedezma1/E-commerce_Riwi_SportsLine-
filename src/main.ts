@@ -1,34 +1,39 @@
-import { NestFactory, Reflector } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { LoggerMiddleware } from './common/middleware/logger.middleware';
-import { HttpExceptionFilter } from './common/filters/http-exception.filter';
-import { RolesGuard } from './common/guards/roles.guards';
-import { LoggingInterceptor } from './common/interceptors/logging.interceptors';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
+import { AppModule } from './config/DataBase';
+import { ConfigService } from '@nestjs/config';
+import { GlobalExceptionFilter } from './common/filters/http-exception.filter';
+import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
-  app.use(new LoggerMiddleware().use);
-  app.useGlobalFilters(new HttpExceptionFilter())
-  app.useGlobalGuards(new RolesGuard(new Reflector()));
-  app.useGlobalInterceptors(new LoggingInterceptor());
+    const app = await NestFactory.create(AppModule);
+    const configService = app.get(ConfigService);
 
-  const config = new DocumentBuilder()
-  .setTitle('API Example')
-  .setDescription('Documentación de la API con Auth JWT')
-  .setVersion('1.0')
-  .addBearerAuth(
-    {
-      type: 'http',
-      scheme: 'bearer',
-      bearerFormat: 'JWT',
-    },
-    'access-token', // Nombre para swagger
-  )
-  .build();
+    // Pipes globales
+    app.useGlobalPipes(
+        new ValidationPipe({
+            whitelist: true, // elimina propiedades no declaradas en el DTO
+            forbidNonWhitelisted: true, // lanza error si hay propiedades desconocidas
+            transform: true, // convierte tipos automáticamente
+        }),
+    );
 
-const document = SwaggerModule.createDocument(app, config);
-SwaggerModule.setup('api', app, document);
+    // Interceptores globales
+    app.useGlobalInterceptors(
+        new LoggingInterceptor(),
+        new ResponseInterceptor(),
+    );
+
+    // Filtros globales
+    app.useGlobalFilters(new GlobalExceptionFilter());
+
+    // Habilitar CORS
+    app.enableCors();
+
+    const port = configService.get<number>('PORT') || 5000;
+    await app.listen(port);
+
+    console.log(`Servidor ejecutándose en: http://localhost:${port}`);
 }
 bootstrap();
