@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RefreshAuthGuard } from './guards/refresh.guard';
@@ -6,6 +6,8 @@ import { RefreshToken } from './dto/refresh-token.dto';
 import { GetUser } from './decorators/get-user.decorator';
 import { JwtAuthGuard } from './guards/jwt.guard';
 import { ApiTags, ApiBearerAuth, ApiBody, ApiOperation } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { GoogleAuthGuard } from './guards/google.guard';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -54,5 +56,18 @@ export class AuthController {
     @Post('register')
     register(@Body() body: any) {
         return this.authService.register(body);
+    }
+
+    @Get('google')
+    @ApiOperation({ summary: 'Redirige al login de Google (OAuth2)' })
+    @UseGuards(GoogleAuthGuard)
+    googleAuth() {
+        return;
+    }
+
+    @Get('google/redirect')
+    @UseGuards(AuthGuard('google'))
+    googleRedirect(@Req() req) {
+      return this.authService.oauthLogin(req.user);
     }
 }

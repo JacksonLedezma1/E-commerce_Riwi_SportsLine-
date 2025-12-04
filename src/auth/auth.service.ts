@@ -109,4 +109,26 @@ export class AuthService {
             password: hashedPass,
         });
     }
+
+    async validateGoogleUser(profile: any) {
+    const email = profile.emails[0].value;
+
+    let user = await this.usersService.findByEmail(email);
+
+    if (!user) {
+        const created = await this.usersService.createUser({
+      name: profile.displayName,
+      email,
+      password: null, // usuario creado por OAuth
+    });
+    user = Array.isArray(created) ? created[0] : created;
+  }
+
+  return user;
+}
+
+oauthLogin(user: any) {
+  return this.generateTokens(user);
+}
+
 }
